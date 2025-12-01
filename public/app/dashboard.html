@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>CRM-Ticket Dashboard</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #000;
+            --panel: #0f0f0f;
+            --muted: #bdbdbd;
+            --card: #121212;
+            --border: #2a2a2a;
+            --accent: #a73bff;
+            --accent-2: #ff64b1;
+            --accent-grad: linear-gradient(180deg, #58327d, #e33c3c);
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            background: var(--bg);
+            color: #eaeaea;
+            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+        }
+
+        .app-shell {
+            display: flex;
+            min-height: 100vh;
+            gap: 18px;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(255, 255, 255, 0.007));
+            border-right: 1px solid var(--border);
+            padding: 22px;
+            box-shadow: 0 6px 22px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: #111;
+            object-fit: contain;
+            padding: 6px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+        }
+
+        .brand {
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 1px;
+            font-size: 14px;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 6px;
+        }
+
+        .nav a {
+            padding: 10px 12px;
+            border-radius: 10px;
+            color: #ddd;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .nav a.active,
+        .nav a:hover {
+            background: #111;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            color: var(--accent-2);
+        }
+
+        .sidebar .small {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: auto;
+        }
+
+        /* Main area */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            padding: 20px 28px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.005), rgba(255, 255, 255, 0.01));
+            border: 1px solid var(--border);
+            padding: 10px 14px;
+            border-radius: 12px;
+        }
+
+        .top-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-title {
+            color: var(--accent);
+            font-weight: 700;
+            letter-spacing: 1px;
+            font-size: 16px;
+        }
+
+        .search-input {
+            width: 320px;
+            max-width: 40vw;
+        }
+
+        .search-input .form-control {
+            background: #0d0d0d;
+            border: 1px solid var(--border);
+            color: #eee;
+            border-radius: 8px;
+            padding: 8px 10px;
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid transparent;
+            color: #ddd;
+            padding: 8px 10px;
+            border-radius: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent-grad);
+            border: none;
+            color: #fff;
+            padding: 9px 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            box-shadow: 0 8px 18px rgba(227, 60, 60, 0.12);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 14px;
+            border-radius: 12px;
+        }
+
+        .stat-title {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            margin-top: 6px;
+        }
+
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 14px;
+            border-radius: 12px;
+        }
+
+        .panel .panel-title {
+            color: var(--accent);
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #e9e9e9;
+        }
+
+        thead th {
+            text-align: left;
+            padding: 12px 10px;
+            color: var(--accent-2);
+            font-weight: 700;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody td {
+            padding: 12px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            vertical-align: middle;
+        }
+
+        /* --- Updated/New Status Styles --- */
+        .status-pill {
+            padding: 6px 8px;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+
+        /* Statuses that are considered "Open" */
+        .status-pending {
+            background: rgba(255, 198, 98, 0.08);
+            color: #ffc27a;
+        }
+
+        .status-inprogress {
+            background: rgba(80, 150, 255, 0.1);
+            color: #7ab3ff;
+        }
+
+        .status-onhold {
+            background: rgba(255, 75, 75, 0.12);
+            color: var(--accent-2);
+        }
+
+        /* Status that is considered "Closed" */
+        .status-completed {
+            background: rgba(60, 180, 90, 0.06);
+            color: #8cf7a6;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pill {
+            padding: 6px 10px;
+            border-radius: 8px;
+            background: #0b0b0b;
+            border: 1px solid var(--border);
+            color: #ddd;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        /* NEW: Filter Active State */
+        .pill.active-filter {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #000;
+        }
+
+        /* Media Queries remain the same */
+        @media (max-width:1000px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .search-input .form-control {
+                width: 100%;
+            }
+        }
+
+        @media (max-width:680px) {
+            .grid {
+                grid-template-columns: repeat(1, 1fr);
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+        }
+
+        .modal-content {
+            background: #0e0e0e;
+            border: 1px solid var(--border);
+            color: #ddd;
+        }
+
+        .modal-header .modal-title {
+            color: var(--accent);
+            font-weight: 800;
+        }
+
+        .ticket-subject {
+            font-weight: 800;
+            font-size: 18px;
+            color: #fff;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="logo-wrap">
+                <img class="logo" src="../assets/img/logo.png" alt="logo">
+                <div>
+                    <div class="brand">CRM_TICKET</div>
+                    <div class="muted" style="margin-top:4px;">Admin Panel</div>
+                </div>
+            </div>
+
+            <nav class="nav">
+                <a href="dashboard.html" class="active">Dashboard</a>
+                <a href="tickets.html">Tickets</a>
+                <a href="users.html">Users</a>
+                <a href="register.html">Users Management</a>
+                <a href="settings.html">Settings</a>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <div class="topbar">
+                <div class="top-left">
+                    <div class="page-title">Dashboard</div>
+                    <div class="search-input ms-3">
+                        <input id="q" class="form-control" placeholder="Search tickets, subject, user..."
+                            oninput="applyFilters()" />
+                    </div>
+                </div>
+
+                <div class="top-actions">
+                    <button class="btn-primary btn-sm me-2" onclick="createModal.show()">+ New Ticket</button>
+                    
+                    <div class="muted me-2">Filter:</div>
+                    <div class="pill" onclick="setFilter('all')">All</div>
+                    <div class="pill" onclick="setFilter('open')">Open</div>
+                    <div class="pill" onclick="setFilter('pending')">Pending</div>
+                    <div class="pill" onclick="setFilter('closed')">Closed</div>
+                    <div class="pill" onclick="setFilter('inprogress')">In Progress</div>
+                    <button class="btn-ghost" onclick="logout()">Logout</button>
+                </div>
+            </div>
+
+
+            <div class="grid">
+                <div class="stat-card panel">
+                    <div class="stat-title">Open Tickets</div>
+                    <div class="stat-value" id="statOpen">0</div>
+                    <div class="muted">Tickets not completed</div>
+                </div>
+                <div class="stat-card panel">
+                    <div class="stat-title">Pending</div>
+                    <div class="stat-value" id="statPending">0</div>
+                    <div class="muted">Awaiting initial action</div>
+                </div>
+                <div class="stat-card panel">
+                    <div class="stat-title">Closed</div>
+                    <div class="stat-value" id="statClosed">0</div>
+                    <div class="muted">Resolved tickets</div>
+                </div>
+            </div>
+
+
+            <div class="panel">
+                <div class="panel-title">Ticket List</div>
+                <div style="overflow:auto;">
+                    <table aria-label="Tickets table">
+                        <thead>
+                            <tr>
+                                <th style="width:80px">id</th>
+                                <th>Subject</th>
+                                <th style="width:160px">Status</th>
+                                <th style="width:160px">Created By</th>
+                                <th style="width:160px">Assignee</th> <th style="width:160px">Created On</th>
+                                <th style="width:160px">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ticketTable">
+                            <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:18px;">Loading tickets...</td></tr>
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <div style="text-align:center;color:var(--muted);font-size:13px;padding-bottom:36px;">
+                CRM-Ticket • Black & Red theme
+            </div>
+        </main>
+    </div>
+
+
+    <div class="modal fade" id="ticketModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ticket <span id="modalTicketId">#</span></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="ticket-subject" id="modalSubject"></div>
+                    <div id="modalStatusPill" style="margin-top:8px; margin-bottom: 12px;"></div> 
+                    <div class="muted" id="modalMeta" style="margin-bottom:12px;"></div>
+                    <div id="modalBody"
+                        style="white-space:pre-wrap;background:#0b0b0b;padding:12px;border-radius:8px;border:1px solid var(--border);">
+                    </div>
+                    <hr style="border-color:var(--border);margin:16px 0;">
+                    <div id="modalComments"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-primary" id="modalCloseBtn">Close Ticket</button>
+                    <button class="btn-ghost" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="createModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-md modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Ticket</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <form id="createForm" class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label muted">Subject</label>
+                        <input name="subject" required class="form-control"
+                            style="background:#0b0b0b;border:1px solid var(--border);color:#eee;border-radius:8px;padding:8px;">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label muted">Message</label>
+                        <textarea name="message" required rows="6" class="form-control"
+                            style="background:#0b0b0b;border:1px solid var(--border);color:#eee;border-radius:8px;padding:8px;"></textarea>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn-ghost" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn-primary">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // --- API PATH DEFINITIONS (CRITICAL FIX) ---
+        // Determines the correct relative path to the API based on the current location
+        const API_BASE = location.pathname.includes('/app/') ? '../api/tickets.php' : 'api/tickets.php';
+        const LOGOUT_API = location.pathname.includes('/app/') ? '../api/logout.php' : 'api/logout.php';
+        // ------------------------------------------
+
+        let tickets = [];
+        let currentFilter = "all";
+        let searchQ = "";
+
+        const ticketModal = new bootstrap.Modal(document.getElementById("ticketModal"));
+        const createModal = new bootstrap.Modal(document.getElementById("createModal"));
+
+        const TICKET_DISPLAY_STATUSES = {
+            'pending': 'Pending',
+            'inprogress': 'In Progress',
+            'completed': 'Closed',
+            'onhold': 'On Hold'
+        };
+
+        // --- Core Data Loading ---
+
+        async function loadTickets() {
+            try {
+                // Use API_BASE constant
+                const res = await fetch(API_BASE, {
+                    credentials: "include"
+                });
+
+                // CRITICAL: Check for unauthorized access (401 status)
+                if (res.status === 401) {
+                    window.location.href = "login.html";
+                    return;
+                }
+
+                const data = await res.json();
+                if (!data.success) throw new Error("API returned error: " + data.error);
+
+                tickets = data.tickets.map(t => ({
+                    id: parseInt(t.id),
+                    subject: t.title || t.name,
+                    body: t.description || '',
+                    user: t.author_name || '',
+                    assignee: t.assignee_name || '-',
+                    status: t.status || 'pending',
+                    created: t.created_at || '',
+                }));
+
+                renderTable();
+
+            } catch (err) {
+                console.error("Load error:", err);
+                document.getElementById("ticketTable").innerHTML =
+                    `<tr><td colspan="7" style="text-align:center;color:red;padding:18px;">
+                        Failed to load tickets from API
+                    </td></tr>`;
+            }
+        }
+
+
+        async function closeTicket(id, fromModal = false) {
+            if (!confirm(`Are you sure you want to close ticket #${id}?`)) return;
+
+            try {
+                const fd = new FormData();
+                fd.append('id', id);
+                fd.append('status', 'completed');
+                // Use API_BASE constant
+                const res = await fetch(API_BASE + '?action=status', {
+                    method: "POST",
+                    body: fd,
+                    credentials: "include"
+                });
+
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error || "Close ticket failed");
+
+                const t = tickets.find(x => x.id === id);
+                if (t) t.status = 'completed';
+
+                renderTable();
+                if (fromModal) ticketModal.hide();
+
+            } catch (err) {
+                alert("Failed to close ticket: " + err.message);
+                console.error(err);
+            }
+        }
+
+
+        document.getElementById("createForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const fd = new FormData(e.target);
+            // Ensure API gets expected keys ('name' and 'description')
+            fd.append('name', fd.get('subject')); 
+            fd.delete('subject');
+            fd.append('description', fd.get('message'));
+            fd.delete('message');
+
+
+            try {
+                // Use API_BASE constant
+                const res = await fetch(API_BASE, {
+                    method: "POST",
+                    body: fd,
+                    credentials: "include"
+                });
+
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error || "Create ticket failed");
+
+                createModal.hide();
+                e.target.reset();
+
+                loadTickets();
+
+            } catch (err) {
+                alert("Failed to create ticket: " + err.message);
+                console.error(err);
+            }
+        });
+
+        // --- Rendering Logic ---
+
+        function renderStats() {
+            document.getElementById("statOpen").textContent = tickets.filter(t => t.status !== "completed").length;
+            document.getElementById("statPending").textContent = tickets.filter(t => t.status === "pending").length;
+            document.getElementById("statClosed").textContent = tickets.filter(t => t.status === "completed").length;
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById("ticketTable");
+            tbody.innerHTML = "";
+
+            let filtered = tickets.slice();
+
+            // 1. Filter by Status
+            if (currentFilter !== "all") {
+                if (currentFilter === "open") {
+                    filtered = filtered.filter(t => t.status !== "completed");
+                } else if (currentFilter === "closed") {
+                    filtered = filtered.filter(t => t.status === "completed");
+                } else {
+                    filtered = filtered.filter(t => t.status === currentFilter);
+                }
+            }
+
+            // 2. Filter by Search Query
+            if (searchQ) {
+                const query = searchQ.toLowerCase();
+                filtered = filtered.filter(t =>
+                    (t.id.toString() + " " + t.subject + " " + t.user + " " + t.body + " " + t.assignee).toLowerCase().includes(query)
+                );
+            }
+
+            // 3. Sort
+            filtered.sort((a, b) => new Date(b.created) - new Date(a.created));
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:18px;">No tickets found matching current filters/search</td></tr>`;
+                renderStats();
+                return;
+            }
+
+            // 4. Render Rows
+            filtered.forEach(t => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>#${t.id}</td>
+                    <td>
+                        <div style="font-weight:700;color:#fff">${escapeHtml(t.subject)}</div>
+                        <div class="muted" style="margin-top:6px">${escapeHtml(t.body.slice(0, 80))}${t.body.length > 80 ? '...' : ''}</div>
+                    </td>
+                    <td>${statusHtml(t.status)}</td>
+                    <td>${escapeHtml(t.user)}</td>
+                    <td>${escapeHtml(t.assignee)}</td>
+                    <td>${formatDate(t.created)}</td>
+                    <td>
+                        <div class="actions">
+                            <button class="pill" onclick="viewTicket(${t.id})">View</button>
+                            ${t.status !== "completed" ? `<button class="pill" onclick="closeTicket(${t.id})">Close</button>` : ""}
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            renderStats();
+        }
+
+        function viewTicket(id) {
+            const t = tickets.find(x => x.id === id);
+            if (!t) return;
+
+            document.getElementById("modalTicketId").textContent = "#" + t.id;
+            document.getElementById("modalSubject").textContent = t.subject;
+            document.getElementById("modalBody").textContent = t.body;
+
+            document.getElementById("modalStatusPill").innerHTML = statusHtml(t.status);
+
+            document.getElementById("modalMeta").innerHTML = `
+                <span style="font-weight:700;">Author:</span> ${t.user} 
+                • <span style="font-weight:700;">Assignee:</span> ${t.assignee}
+                • <span style="font-weight:700;">Created:</span> ${formatDate(t.created)}
+            `;
+
+            const closeBtn = document.getElementById("modalCloseBtn");
+            if (t.status !== "completed") {
+                closeBtn.style.display = 'inline-block';
+                closeBtn.onclick = () => closeTicket(id, true);
+            } else {
+                closeBtn.style.display = 'none';
+            }
+
+
+            const wrap = document.getElementById("modalComments");
+            wrap.innerHTML = `<div class="muted">No comments yet.</div>`; 
+
+            ticketModal.show();
+        }
+
+
+        // --- Utility Functions ---
+
+        function escapeHtml(text) {
+            if (typeof text !== 'string') return text;
+            return text.replace(/[&<>"']/g, t => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[t]));
+        }
+
+        function statusHtml(s) {
+            const status = s.toLowerCase();
+            const text = TICKET_DISPLAY_STATUSES[status] || status;
+            return `<span class="status-pill status-${status}">${text}</span>`;
+        }
+
+        function formatDate(d) {
+            return new Date(d).toLocaleString();
+        }
+
+        // --- Filtering and Events ---
+
+        // NEW: Function to manage the visual state of the active filter
+        function setActiveFilter(filter) {
+            document.querySelectorAll('.top-actions .pill').forEach(el => {
+                el.classList.remove('active-filter');
+            });
+            // Find the pill based on its onclick attribute value
+            const el = document.querySelector(`.top-actions .pill[onclick*="'${filter}'"]`);
+            if (el) {
+                el.classList.add('active-filter');
+            }
+        }
+        
+        function setFilter(f) {
+            currentFilter = f;
+            setActiveFilter(f); // Highlight the new active filter
+            renderTable();
+        }
+
+        function applyFilters() {
+            searchQ = document.getElementById("q").value.toLowerCase();
+            renderTable();
+        }
+
+        // CORRECTED: Logout function using the defined LOGOUT_API and POST method
+        function logout() {
+            fetch(LOGOUT_API, { method: "POST", credentials: "include" })
+                .then(() => (window.location.href = "login.html"));
+        }
+
+        // --- Initialization ---
+        
+        // Ensure the 'all' filter is active when the page loads
+        setFilter('all'); 
+        
+        loadTickets();
+    </script>
+
+
+</body>
+
+</html>

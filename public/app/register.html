@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>CRM-Ticket Register & Users</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* --- PROFESSIONAL COLOR PALETTE --- */
+        :root {
+            --bg-color: #0d0d10;
+            /* Very dark, almost black background */
+            --card-bg: #1a1a1f;
+            /* Clean dark gray for panels */
+            --border-color: #33333e;
+            /* Subtle, professional gray-blue border */
+            --input-bg: #222228;
+            --primary-red: #d94545;
+            /* Slightly muted, elegant red accent */
+            --primary-red-dark: #c03a3a;
+            --text-light: #e0e0e0;
+            --text-muted: #999;
+            --success-color: #5cb85c;
+            --error-color: #d9534f;
+            /* Changed for better contrast */
+            --error-bg: #301010;
+            --success-bg: #103010;
+        }
+
+        /* --- BASE STYLES --- */
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            background: var(--bg-color);
+            color: var(--text-light);
+            font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+        }
+
+        .page-wrap {
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 50px 24px;
+            gap: 40px;
+        }
+
+        /* --- CARD/FORM STYLES --- */
+        .card-wrap,
+        .panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            max-width: 820px;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-wrap {
+            padding: 40px;
+            display: flex;
+            gap: 40px;
+            align-items: stretch;
+        }
+
+        .left {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .right {
+            flex: 1;
+            padding: 0;
+        }
+
+        .right h3 {
+            color: var(--primary-red);
+            margin-bottom: 8px;
+            font-size: 1.6rem;
+            font-weight: 600;
+            text-shadow: none;
+        }
+
+        .right p {
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+        }
+
+        .form-label {
+            color: var(--text-light) !important;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .form-control {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            border-radius: 6px;
+            padding: 10px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control:focus {
+            background: var(--input-bg);
+            border-color: var(--primary-red);
+            box-shadow: 0 0 0 0.15rem rgba(217, 69, 69, 0.3);
+            color: var(--text-light);
+        }
+
+        /* --- BUTTON STYLES --- */
+        .btn-primary {
+            background: var(--primary-red);
+            border: 1px solid var(--primary-red-dark);
+            padding: 10px 15px;
+            font-weight: 600;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-red-dark);
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* --- MESSAGES & LINKS --- */
+        .msg-box {
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            margin-top: 15px;
+            /* General message box styling */
+        }
+
+        .error-msg,
+        .msg-box.error {
+            color: var(--error-color);
+            font-size: 13px;
+            /* Keep inline errors small */
+            margin-top: 6px;
+            display: none;
+        }
+
+        .success-msg,
+        .msg-box.success {
+            color: var(--success-color);
+            font-size: 13px;
+            margin-top: 6px;
+            display: none;
+        }
+
+        #generalError,
+        #generalOk {
+            font-size: 14px;
+            display: none;
+        }
+
+        #generalError {
+            background: var(--error-bg);
+            color: var(--error-color);
+            border: 1px solid var(--primary-red-dark);
+        }
+
+        #generalOk {
+            background: var(--success-bg);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+
+        a {
+            color: var(--primary-red);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: var(--primary-red-dark);
+            text-decoration: underline;
+        }
+
+        /* --- PANEL/TABLE STYLES --- */
+        .panel {
+            padding: 25px;
+        }
+
+        .panel-title {
+            color: var(--text-light);
+            font-weight: 700;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            color: var(--text-light);
+        }
+
+        thead th {
+            color: var(--text-light);
+            padding: 10px;
+            border-bottom: 2px solid var(--primary-red);
+            text-align: left;
+            font-weight: 600;
+        }
+
+        tbody td {
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .panel table tr td:nth-child(4) {
+            font-size: 0.9em;
+            color: var(--text-muted);
+        }
+
+        /* --- MEDIA QUERY --- */
+        @media(max-width:800px) {
+            .card-wrap {
+                flex-direction: column;
+                padding: 20px;
+            }
+
+            .left {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                padding-bottom: 20px;
+            }
+
+            .right {
+                padding: 20px 0 0 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-wrap">
+
+        <div class="card-wrap">
+            <div class="left">
+                <img src="../assets/img/logo.png" alt="CRM Logo" style="max-width:200px;opacity:.98">
+            </div>
+            <div class="right">
+                <h3>Create an Account</h3>
+                <p>Register to gain access to the secure ticket management system.</p>
+                <form id="registerForm" autocomplete="off" novalidate>
+                    <div class="mb-3">
+                        <label class="form-label" for="nameInput">Full Name</label>
+                        <input id="nameInput" name="name" type="text" class="form-control" placeholder="Your full name" required **autocomplete="name"**>
+                        <div class="error-msg" id="nameError" **role="alert"**></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="emailInput">Email Address</label>
+                        <input id="emailInput" name="email" type="email" class="form-control" placeholder="you@example.com" required **autocomplete="email"**>
+                        <div class="error-msg" id="emailError" **role="alert"**></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="passwordInput">Password</label>
+                        <input id="passwordInput" name="password" type="password" class="form-control" placeholder="Choose a secure password" required **autocomplete="new-password"**>
+                        <div class="error-msg" id="passwordError" **role="alert"**></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="passwordConfirmInput">Confirm Password</label>
+                        <input id="passwordConfirmInput" name="password_confirmation" type="password" class="form-control" placeholder="Repeat password" required **autocomplete="new-password"**>
+                        <div class="error-msg" id="passwordConfirmError" **role="alert"**></div>
+                    </div>
+                    <div class="mb-3 d-grid">
+                        <button id="submitBtn" class="btn btn-primary" type="submit">Register Now</button>
+                    </div>
+                    <div id="generalError" class="error-msg msg-box error" **role="alert" aria-live="polite"**></div>
+                    <div id="generalOk" class="success-msg msg-box success" **role="status" aria-live="polite"**></div>
+                    <div style="margin-top:12px;font-size:14px;color:var(--text-muted)">
+                        Already have an account? <a href="login.html">Sign In</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">Registered Users (Staff/Admin Only)</div>
+            <div style="overflow:auto;">
+                <table aria-label="Users table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Registered On</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTable">
+                        <tr>
+                            <td colspan="4" style="text-align:center;color:var(--text-muted);padding:18px;">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // --- Elements ---
+            const form = document.getElementById('registerForm');
+            const nameEl = document.getElementById('nameInput');
+            const emailEl = document.getElementById('emailInput');
+            const passEl = document.getElementById('passwordInput');
+            const passConfEl = document.getElementById('passwordConfirmInput');
+            const nameErr = document.getElementById('nameError');
+            const emailErr = document.getElementById('emailError');
+            const passErr = document.getElementById('passwordError');
+            const passConfErr = document.getElementById('passwordConfirmError');
+            const generalErr = document.getElementById('generalError');
+            const generalOk = document.getElementById('generalOk');
+            const submitBtn = document.getElementById('submitBtn');
+            const userTableBody = document.getElementById('userTable');
+
+            const apiUrl = '../api/register.php';
+
+            // --- Utility Functions ---
+            function clearAllFeedback() {
+                // Clear all field-level and general feedback messages
+                [nameErr, emailErr, passErr, passConfErr, generalErr, generalOk].forEach(el => {
+                    el.style.display = 'none';
+                    el.textContent = '';
+                });
+            }
+
+            function showField(el, msg) {
+                el.textContent = msg;
+                el.style.display = 'block';
+            }
+
+            function showGeneralError(msg) {
+                generalErr.textContent = msg;
+                generalErr.style.display = 'block';
+                generalOk.style.display = 'none'; // Hide success if error appears
+            }
+
+            function showGeneralOk(msg) {
+                generalOk.textContent = msg;
+                generalOk.style.display = 'block';
+                generalErr.style.display = 'none'; // Hide error if success appears
+            }
+
+            function escapeHtml(text) {
+                if (typeof text !== 'string') return '';
+                return text.replace(/[&<>]/g, t => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;'
+                }[t]));
+            }
+
+            function formatDate(d) {
+                const date = new Date(d);
+                if (isNaN(date)) return 'N/A';
+                return date.toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+
+            // --- Registration Handler ---
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                clearAllFeedback();
+
+                const name = nameEl.value.trim();
+                const email = emailEl.value.trim();
+                const password = passEl.value;
+                const password_confirmation = passConfEl.value;
+                let ok = true;
+
+                // Client-side validation for quick feedback
+                if (!name || name.length < 2) {
+                    showField(nameErr, 'Name must be at least 2 characters');
+                    ok = false;
+                }
+                if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+                    showField(emailErr, 'Enter a valid email');
+                    ok = false;
+                }
+                if (!password || password.length < 8) {
+                    showField(passErr, 'Password must be 8+ characters');
+                    ok = false;
+                }
+                if (password !== password_confirmation) {
+                    showField(passConfErr, 'Passwords do not match');
+                    ok = false;
+                }
+
+                if (!ok) return;
+
+                // Prepare to submit
+                submitBtn.disabled = true;
+                const prevText = submitBtn.textContent;
+                submitBtn.textContent = 'Processing...';
+
+                try {
+                    const fd = new FormData();
+                    fd.append('name', name);
+                    fd.append('email', email);
+                    fd.append('password', password);
+                    // Pass confirmation for server-side validation
+                    fd.append('password_confirmation', password_confirmation);
+
+                    const resp = await fetch(apiUrl, {
+                        method: 'POST',
+                        credentials: 'include',
+                        body: fd
+                    });
+
+                    const text = await resp.text();
+                    let json = null;
+
+                    try {
+                        json = JSON.parse(text);
+                    } catch (err) {
+                        console.error('Server returned non-JSON:', text);
+                        return showGeneralError('Server Error: Non-JSON response.');
+                    }
+
+                    if (!resp.ok) {
+                        // Handle validation errors (422) or conflicts (409)
+                        if (json && json.errors && typeof json.errors === 'object') {
+                            // Field-specific errors
+                            if (json.errors.name) showField(nameErr, json.errors.name);
+                            if (json.errors.email) showField(emailErr, json.errors.email);
+                            if (json.errors.password) showField(passErr, json.errors.password);
+                            if (json.errors.password_confirmation) showField(passConfErr, json.errors.password_confirmation);
+                        } else if (json && json.error) {
+                            // General errors (e.g., "Email already registered" or "Logout first...")
+                            showGeneralError(json.error);
+                        } else {
+                            showGeneralError('Registration failed: Unknown error.');
+                        }
+                        return;
+                    }
+
+                    // Success
+                    showGeneralOk(json.message || 'Registered successfully. Redirecting to login...');
+                    
+                    // Clear form and update table
+                    form.reset(); 
+                    loadUsers(); 
+
+                    // Optional: Automatically redirect to login page after a short delay
+                    setTimeout(() => window.location.href = "login.html", 1500);
+
+                } catch (err) {
+                    console.error('Network error:', err);
+                    showGeneralError('Network error while connecting to server.');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = prevText;
+                }
+            });
+
+            // --- User Listing Logic ---
+            async function loadUsers() {
+                userTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:18px;">Loading...</td></tr>';
+                try {
+                    // Assuming users.php requires a session (Admin/Staff)
+                    const resp = await fetch('../api/users.php', {
+                        credentials: 'include'
+                    });
+                    const data = await resp.json();
+
+                    if (resp.status === 403 || !data.success) {
+                        userTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--error-color);padding:18px;">Access Denied: Log in as Staff/Admin to view.</td></tr>';
+                        return;
+                    }
+
+                    if (!data.users || !data.users.length) {
+                        userTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:18px;">No users found.</td></tr>';
+                        return;
+                    }
+
+                    userTableBody.innerHTML = '';
+                    data.users.forEach(u => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td>#${u.id}</td><td>${escapeHtml(u.name)}</td><td>${escapeHtml(u.email)}</td><td>${formatDate(u.created_at)}</td>`;
+                        userTableBody.appendChild(tr);
+                    });
+                } catch (err) {
+                    console.error('Error loading users:', err);
+                    userTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--error-color);padding:18px;">Failed to load users (Server/Network Error)</td></tr>';
+                }
+            }
+
+            // Initial load of the user table when the page starts
+            loadUsers();
+
+        })();
+    </script>
+</body>
+
+</html>
